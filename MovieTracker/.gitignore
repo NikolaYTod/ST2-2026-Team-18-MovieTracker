@@ -1,0 +1,20 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build output
+[Bb]in/
+[Oo]bj/
+
+# User-specific files
+*.userosscache
+*.sln.docstates
+
+# Local SQLite database
+*.db
+*.db-shm
+*.db-wal
+
+# Sensitive local settings
+appsettings.Local.json

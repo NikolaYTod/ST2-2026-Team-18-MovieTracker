@@ -1,0 +1,115 @@
+﻿@model IEnumerable<MovieTracker.Models.Movie>
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Моите филми";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>@ViewBag.ApplicationName</h1>
+        <p class="text-muted">
+            Версия @ViewBag.Version — моята филмова колекция
+        </p>
+    </div>
+
+    <a asp-action="Create" class="btn btn-primary">
+        + Добави филм
+    </a>
+</div>
+
+<h2>Филми</h2>
+
+<form asp-action="Index" method="get" class="card card-body mb-4">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <label for="searchTitle" class="form-label">
+                Заглавие
+            </label>
+            <input id="searchTitle"
+                   name="searchTitle"
+                   value="@ViewBag.SearchTitle"
+                   class="form-control"
+                   placeholder="Например: Inception" />
+        </div>
+
+        <div class="col-md-3">
+            <label for="genre" class="form-label">Жанр</label>
+            <select id="genre"
+                    name="genre"
+                    class="form-select"
+                    asp-items="@(new SelectList(
+                        ViewBag.Genres,
+                        ViewBag.SelectedGenre))">
+                <option value="">Всички жанрове</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label for="year" class="form-label">Година</label>
+            <input id="year"
+                   name="year"
+                   type="number"
+                   value="@ViewBag.Year"
+                   class="form-control"
+                   placeholder="2024" />
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end gap-2">
+            <button type="submit" class="btn btn-success">
+                Филтрирай
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                Изчисти
+            </a>
+        </div>
+    </div>
+</form>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        Няма намерени филми. Добави филм или промени филтрите.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Заглавие</th>
+                    <th>Жанр</th>
+                    <th>Година</th>
+                    <th>Рейтинг</th>
+                    <th>Статус</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var movie in Model)
+                {
+                    <tr>
+                        <td>@movie.Title</td>
+                        <td>@movie.Genre</td>
+                        <td>@movie.ReleaseYear</td>
+                        <td>@movie.Rating.ToString("0.0") / 10</td>
+                        <td>
+                            @if (movie.IsWatched)
+                            {
+                                <span class="badge bg-success">Гледан</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">За гледане</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<p class="text-muted">
+    Общо намерени филми: @Model.Count()
+</p>
