@@ -83,6 +83,7 @@ else
                     <th>Година</th>
                     <th>Рейтинг</th>
                     <th>Статус</th>
+                    <th>Действия</th>
                 </tr>
             </thead>
             <tbody>
@@ -102,6 +103,19 @@ else
                             {
                                 <span class="badge bg-secondary">За гледане</span>
                             }
+                        </td>
+                        <td>
+                            <a asp-action="Edit"
+                               asp-route-id="@movie.Id"
+                               class="btn btn-warning btn-sm">
+                                Редактирай
+                            </a>
+
+                            <a asp-action="Delete"
+                               asp-route-id="@movie.Id"
+                               class="btn btn-danger btn-sm">
+                                Изтрий
+                            </a>
                         </td>
                     </tr>
                 }

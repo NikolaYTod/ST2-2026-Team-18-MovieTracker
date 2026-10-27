@@ -1,0 +1,73 @@
+﻿@model MovieTracker.Models.Movie
+
+@{
+    ViewData["Title"] = "Изтриване на филм";
+}
+
+<h1>Изтриване на филм</h1>
+
+<div class="alert alert-warning">
+    Сигурен ли си, че искаш да изтриеш този филм?
+    Това действие не може да бъде отменено.
+</div>
+
+<hr />
+
+<dl class="row">
+
+    <dt class="col-sm-3">
+        @Html.DisplayNameFor(model => model.Title)
+    </dt>
+
+    <dd class="col-sm-9">
+        @Model.Title
+    </dd>
+
+    <dt class="col-sm-3">
+        @Html.DisplayNameFor(model => model.Genre)
+    </dt>
+
+    <dd class="col-sm-9">
+        @Model.Genre
+    </dd>
+
+    <dt class="col-sm-3">
+        @Html.DisplayNameFor(model => model.ReleaseYear)
+    </dt>
+
+    <dd class="col-sm-9">
+        @Model.ReleaseYear
+    </dd>
+
+    <dt class="col-sm-3">
+        @Html.DisplayNameFor(model => model.Rating)
+    </dt>
+
+    <dd class="col-sm-9">
+        @Model.Rating.ToString("0.0") / 10
+    </dd>
+
+    <dt class="col-sm-3">
+        @Html.DisplayNameFor(model => model.IsWatched)
+    </dt>
+
+    <dd class="col-sm-9">
+        @(Model.IsWatched ? "Гледан" : "За гледане")
+    </dd>
+
+</dl>
+
+<form asp-action="Delete"
+      asp-route-id="@Model.Id"
+      method="post">
+
+    <button type="submit" class="btn btn-danger">
+        Да, изтрий филма
+    </button>
+
+    <a asp-action="Index"
+       class="btn btn-secondary">
+        Отказ
+    </a>
+
+</form>
