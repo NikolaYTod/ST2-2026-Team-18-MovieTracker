@@ -11,13 +11,13 @@ namespace MovieTracker.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly AppSettings _settings;
+        private readonly IMovieQueryService _movieQueryService;
 
-        public MoviesController(
-            ApplicationDbContext context,
-            AppSettings settings)
+        public MoviesController(ApplicationDbContext context,AppSettings settings, IMovieQueryService movieQueryService)
         {
             _context = context;
             _settings = settings;
+            _movieQueryService = movieQueryService;
         }
 
         // SELECT: показва филмите и позволява филтриране.
@@ -71,6 +71,60 @@ namespace MovieTracker.Controllers
             ViewBag.Version = _settings.Version;
 
             return View(result);
+        }
+
+        // POST: изпраща естественоезикова заявка към Gemini AI.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AiSearch(
+            string aiPrompt,
+            CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(aiPrompt))
+            {
+                ViewBag.AiError = "Моля, въведете въпрос за търсене.";
+                return await ReturnIndexWithMoviesAsync(
+                    new List<Movie>());
+            }
+
+            // Изпълняваме AI търсенето чрез Service Layer.
+            var result = await _movieQueryService.SearchAsync(
+                aiPrompt,
+                cancellationToken);
+
+            if (!result.IsSuccess)
+            {
+                ViewBag.AiError = result.Error;
+            }
+            else
+            {
+                ViewBag.AiExplanation = result.Explanation;
+            }
+
+            ViewBag.AiPrompt = aiPrompt;
+
+            return await ReturnIndexWithMoviesAsync(result.Movies?.ToList() ?? new List<Movie>());
+        }
+
+        // Подготвя необходимите данни за Index.cshtml.
+        private async Task<IActionResult> ReturnIndexWithMoviesAsync(
+            List<Movie> movies)
+        {
+            ViewBag.Genres = await _context.Movies
+                .AsNoTracking()
+                .Select(m => m.Genre)
+                .Distinct()
+                .OrderBy(g => g)
+                .ToListAsync();
+
+            ViewBag.SearchTitle = null;
+            ViewBag.SelectedGenre = null;
+            ViewBag.Year = null;
+
+            ViewBag.ApplicationName = _settings.ApplicationName;
+            ViewBag.Version = _settings.Version;
+
+            return View("Index", movies);
         }
 
         // GET: показва празната форма за добавяне.
